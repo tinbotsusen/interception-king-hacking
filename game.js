@@ -522,7 +522,7 @@ document.addEventListener('touchend', (event) => {
 // ==========================================
 // 🛠️ デバッグ用ツール（リリース時は ENABLE_DEBUG を false にするだけ！）
 // ==========================================
-const ENABLE_DEBUG = true; 
+const ENABLE_DEBUG = false; 
 
 if (ENABLE_DEBUG) {
   // ボタンを縦に並べるためのコンテナ
