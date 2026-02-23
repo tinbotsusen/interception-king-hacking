@@ -32,12 +32,11 @@
   </div>
 
   <div class="screen hidden" id="cs">
-    <div class="ci" id="ci">
-      <div id="ci-sg" style="color:var(--b);font-family:Orbitron;font-size:14px;letter-spacing:2px;">STAGE 1</div>
-      <div class="ci-em" id="ci-em">👴</div>
-      <div class="ci-nm" id="ci-nm">敵名</div>
-      <div class="ci-ms" id="ci-ms">"セリフ"</div>
-      <div id="ci-cd" style="color:var(--g);margin-top:20px;font-family:Orbitron;">CONNECTING...</div>
+  <div class="ci" id="ci">
+    <div id="ci-sg" style="color:var(--b);font-family:Orbitron;font-size:14px;letter-spacing:2px;">STAGE 1</div>
+    <div class="ci-em" id="ci-em">👴</div>
+    <div id="ci-nm">敵名</div>
+    <div id="ci-ms">"セリフ"</div>
     </div>
   </div>
 
@@ -60,15 +59,19 @@
     </div>
   </div>
 
-  <div class="screen hidden" id="vs">
-    <div class="gt green" style="margin-bottom: 20px;">STAGE CLEAR!</div>
-    <div style="background:var(--panel);border:2px solid var(--g);border-radius:14px;padding:30px 20px;text-align:center;width:min(380px,92%);">
-      <div class="vs-em-wrap" id="vs-em-wrap"><div class="vs-em" id="vs-em">👴</div><div class="vs-cross">❌</div></div>
-      <div style="font-size:18px;color:var(--y);margin-bottom:10px;" id="vs-nm">敵名</div>
-      <div id="vs-time" style="font-family:Orbitron; font-size:16px; color:var(--b); margin-bottom:15px; text-shadow:0 0 10px var(--b);"></div>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:12px;margin-top:20px;width:80%;max-width:300px;"><button id="vs-next-btn" class="btn" onclick="nextStage()">▶ 次のターゲットへ</button><button class="btn sec" onclick="showTitle()">◀ タイトルへ</button></div>
+<div class="screen hidden" id="vs">
+  <div class="gt green" style="margin-bottom: 20px;">STAGE CLEAR!</div>
+  <div style="background:var(--panel);border:2px solid var(--g);border-radius:14px;padding:30px 20px;text-align:center;width:min(380px,92%);">
+    <div class="vs-em-wrap" id="vs-em-wrap"><div class="vs-em" id="vs-em">👴</div><div class="vs-cross">❌</div></div>
+    <div style="font-size:18px;color:var(--y);margin-bottom:10px;" id="vs-nm">敵名</div>
+    <div id="vs-time" style="font-family:Orbitron; font-size:16px; color:var(--b); margin-bottom:15px; text-shadow:0 0 10px var(--b);"></div>
   </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;margin-top:20px;width:80%;max-width:300px;">
+    <button id="vs-next-btn" class="btn" onclick="nextStage()">▶ 次のターゲットへ</button>
+    <button class="btn sec" onclick="showTitle()">◀ タイトルへ</button>
+  </div>
+</div>
 
   <div class="screen hidden" id="ls">
     <div class="gt" style="color:var(--r)">ACCESS DENIED</div>

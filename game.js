@@ -47,20 +47,53 @@ ENEMIES.forEach((e, i) => {
 }
 
 function startFromTitle(){ let i = ENEMIES.findIndex(e => !SM.clears().includes(e.s)); beginCutin(i === -1 ? 0 : i); }
-function beginCutin(i){ G.idx = i; G.en = ENEMIES[i]; $('ci-sg').textContent=`STAGE ${G.en.s}`; $('ci-em').textContent=G.en.e; $('ci-nm').textContent=G.en.n; $('ci-ms').textContent=`"${G.en.msg}"`; showScreen('cs'); setTimeout(() => startBattle(), 2000); }
-function nextStage(){ beginCutin(G.idx + 1); }
+function beginCutin(i){ 
+  G.idx = i; G.en = ENEMIES[i]; 
+  $('ci-sg').textContent=`STAGE ${G.en.s}`; 
+  $('ci-em').textContent=G.en.e; 
+  $('ci-nm').textContent=G.en.n; 
+  $('ci-ms').textContent=`"${G.en.msg}"`; 
+  showScreen('cs'); 
+  
+  // 🌟 [クリックで開始] の作成
+  let tapHint = $('ci-tap-hint');
+  if (!tapHint) {
+    tapHint = document.createElement('div');
+    tapHint.id = 'ci-tap-hint'; // IDを固定
+    $('cs').appendChild(tapHint);
+  }
+  tapHint.textContent = ">> クリックで開始 <<";
+
+  // 🌟 クリックイベント（ここが止まるとゲームが始まりません）
+  const cs = $('cs');
+  const startFunc = () => {
+    cs.removeEventListener('mousedown', startFunc);
+    cs.removeEventListener('touchstart', startFunc);
+    startBattle();
+  };
+  cs.addEventListener('mousedown', startFunc);
+  cs.addEventListener('touchstart', startFunc);
+}
+
+// 🌟 消えていた重要な関数：これを追加します
 function startBattle(){
-  G.pHp=100; G.eHp=G.en.hp; G.run=true; G.paused=false; G.eCr=0; G.pCr=0; G.mwCnt=0; G.mwTimer=null; G.mwAlertTimer=null; G.mwTriggered=false; G.bw=false;
-  G.dmgTaken = false; // 🌟 バトル開始時は常に無傷(false)
-  G.st = Date.now();  // 🌟 戦闘開始時刻を記録
+  G.run = true; 
+  G.st = Date.now(); 
+  G.pHp = 100; 
+  G.eHp = G.en.hp; 
+  G.dmgTaken = false;
+  G.eCr = 0; 
+  G.pCr = 0;
   
-  $('fw-en').textContent=G.en.n; $('bz').innerHTML=''; 
-  $('ef-cracks').style.opacity=0; $('pf-cracks').style.opacity=0; 
-  $('ef-wall').classList.remove('damaged'); $('pf-wall').classList.remove('damaged');
-  
-  updateHpBars(); 
+  // 画面のひび割れなどをリセット
+  $('ef-wall').classList.remove('damaged');
+  $('pf-wall').classList.remove('damaged');
+  $('ef-cracks').style.opacity = 0;
+  $('pf-cracks').style.opacity = 0;
+
   showScreen('gs'); 
-  startGameLoops();
+  updateHpBars(); 
+  startGameLoops(); 
 }
 
 // game.js の 62行目付近
@@ -392,23 +425,16 @@ function handleWin(){
   G.run = false; clearAllTimers();
   SM.addWin(); SM.addClear(G.en.s);
   
-  // 🌟 今回のプレイが無傷(!G.dmgTaken)なら、タイムの横に🏆を表示
   $('vs-time').textContent = `TIME: ${dur.toFixed(2)}s ${!G.dmgTaken ? '🏆' : ''}`;
-
-  // 🌟 無傷なら記録を保存
   if (!G.dmgTaken) { SM.saveFlawless(G.en.s); }
-
-  // 🌟 裏ボス(16面以降)ならタイムを記録
   if (G.en.s >= 16) { SM.saveTime(G.en.s, dur); }
 
   const btn = $('vs-next-btn');
-
-if (G.en.s === 15) {
-    // 🌟 ここを変更！
+  if (G.en.s === 15) {
     btn.textContent = "新たな敵が君を待っている……";
     btn.onclick = () => showTitle();
   } else {
-    btn.textContent = "NEXT STAGE";
+    btn.textContent = "次のターゲットへ"; 
     btn.onclick = () => nextStage();
   }
 
@@ -419,6 +445,18 @@ if (G.en.s === 15) {
     $('vs-em').textContent = G.en.e;
     $('vs-nm').textContent = G.en.n;
     showScreen('vs');
+
+    // 🌟 巨大広告枠 (300x250) だけを一番下に追加
+    const adSpaceId = 'vs-ad-large-bottom';
+    let ad = $(adSpaceId);
+    if (!ad) {
+      ad = document.createElement('div');
+      ad.id = adSpaceId;
+      ad.className = 'ad-large'; // style.cssで定義した300x250の枠
+      ad.innerHTML = "スポンサー広告 (300x250)";
+      $('vs').appendChild(ad); // 末尾（一番下）に追加
+    }
+
     setTimeout(() => { AU.victory(); $('vs-em-wrap').classList.add('destroyed'); }, 100);
   }
 }
@@ -538,3 +576,9 @@ if (ENABLE_DEBUG) {
   };
 }
 // ==========================================
+
+// game.js の一番最後に追加
+function nextStage() {
+  // 現在の敵のインデックスを1つ進めて、カットインを開始する
+  beginCutin(G.idx + 1);
+}
