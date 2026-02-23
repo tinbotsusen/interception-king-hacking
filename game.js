@@ -1,4 +1,51 @@
-﻿const $ = id => document.getElementById(id);
+﻿// ==========================================
+// 🌐 グローバル設定：URLパラメータによる切り替え
+// ==========================================
+const urlParams = new URLSearchParams(window.location.search);
+const IS_AD_OFF = urlParams.get('ads') === 'off'; // ?ads=off で広告消去
+const IS_EN = urlParams.get('lang') === 'en';     // ?lang=en で英語化
+
+// 🌟 起動時に実行する環境設定
+window.addEventListener('load', () => {
+  // 1. 広告表示の切り替え
+  if (IS_AD_OFF) {
+    const adStyle = document.createElement('style');
+    adStyle.innerHTML = `
+      .ad-large, #vs-ad-large-bottom, [id*="ad-"] { display: none !important; }
+    `;
+    document.head.appendChild(adStyle);
+    console.log("🛡️ Ad-block Mode: ON");
+  }
+
+  // 2. UIの英語化
+  if (IS_EN) {
+    translateUI();
+    console.log("🌎 English Mode: ON");
+  }
+});
+
+// 🌟 UIテキストの翻訳辞書
+function translateUI() {
+  const UI_TEXT = {
+    'vs-next-btn': 'NEXT TARGET',
+    'ci-tap-hint': '>> CLICK TO START <<',
+    'pause-btn': 'PAUSE',
+    // 他のボタンやタイトルも必要に応じて追加
+  };
+
+  for (const [id, text] of Object.entries(UI_TEXT)) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+  
+  // タイトル画面のボタンなども修正
+  document.querySelectorAll('.btn').forEach(btn => {
+    if (btn.textContent.includes('侵入開始')) btn.textContent = '▶ START HACKING';
+    if (btn.textContent.includes('タイトルへ')) btn.textContent = '◀ TITLE';
+  });
+}
+
+const $ = id => document.getElementById(id);
 const G = { idx:0, en:null, pHp:100, eHp:0, run:false, paused:false, tmrs:[], spwInt:null, atkInt:null, eCr:0, pCr:0, mwCnt:0, mwTimer:null, mwAlertTimer:null, mwTriggered:false, bw:false, st: 0, dmgTaken: false, activeSubSp: null, subIdx: 0 };
 // G.O.Dが巡回するモードの順番
 // 🌟 'visionHell' を削除し、'danmaku' のみにします
@@ -307,9 +354,14 @@ function startSpecialLoop(){
       if(G.mwCnt<=0){
         G.mwTriggered = true; AU.alert();
         
-        const mwData = G.en.mw || { bg: '#000080', hd: 'System Alert', bd: 'VIRUS DETECTED' };
+        // 🌟 修正：英語モードなら en_mw を読み込み、背景色はそのまま流用する！
+        let mwData = G.en.mw || { bg: '#000080', hd: 'System Alert', bd: 'VIRUS DETECTED' };
+        if (IS_EN && G.en.en_mw) {
+          mwData = { bg: mwData.bg, hd: G.en.en_mw.hd, bd: G.en.en_mw.bd };
+        }
 
-        for(let i=0;i<5;i++){ 
+        for(let i=0;i<5;i++){
+          
           G.mwCnt++; 
           const p = document.createElement('div'); 
           p.className = 'mw-box'; 
