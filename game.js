@@ -483,7 +483,7 @@ function shareTo(platform) {
   let shareText = "";
 
   if (!$('rs').classList.contains('hidden')) {
-    shareText = "【傍受王者ハッキング】全20ステージ完全制覇！真の傍受王者となった！";
+    shareText = "【傍受王者ハッキング】全ステージ完全制覇！真の傍受王者となった！";
   } else {
     const clears = SM.clears().length;
     if (clears === 0) {
