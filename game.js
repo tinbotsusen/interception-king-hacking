@@ -1,56 +1,23 @@
 ﻿// ==========================================
-// 🌐 グローバル設定：URLパラメータによる切り替え
+// 🌐 グローバル設定：自サイト判定（ホワイトリスト方式）
 // ==========================================
-const urlParams = new URLSearchParams(window.location.search);
-const IS_AD_OFF = urlParams.get('ads') === 'off'; // ?ads=off で広告消去
-const IS_EN = urlParams.get('lang') === 'en';     // ?lang=en で英語化
+// 🌟 ここに自サイトのドメイン（URLの一部）を指定します。今はGitHubのものを仮置き。
+const OFFICIAL_HOST = "tinbotsusen.github.io"; 
+const IS_OFFICIAL = window.location.hostname.includes(OFFICIAL_HOST);
 
-// 🌟 起動時に実行する環境設定
+// 起動時に環境を判定
 window.addEventListener('load', () => {
-  // 1. 広告表示の切り替え
-  if (IS_AD_OFF) {
-    const adStyle = document.createElement('style');
-    adStyle.innerHTML = `
-      .ad-large, #vs-ad-large-bottom, [id*="ad-"] { display: none !important; }
-    `;
-    document.head.appendChild(adStyle);
-    console.log("🛡️ Ad-block Mode: ON");
-  }
-
-  // 2. UIの英語化
-  if (IS_EN) {
-    translateUI();
-    console.log("🌎 English Mode: ON");
+  if (IS_OFFICIAL) {
+    console.log("💰 公式サイト判定：スポンサー広告を表示します");
+  } else {
+    console.log("🛡️ 外部サイト判定：自サイトへの誘導リンクを表示します");
   }
 });
 
-// 🌟 UIテキストの翻訳辞書
-function translateUI() {
-  const UI_TEXT = {
-    'vs-next-btn': 'NEXT TARGET',
-    'ci-tap-hint': '>> CLICK TO START <<',
-    'pause-btn': 'PAUSE',
-    // 他のボタンやタイトルも必要に応じて追加
-  };
-
-  for (const [id, text] of Object.entries(UI_TEXT)) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = text;
-  }
-  
-  // タイトル画面のボタンなども修正
-  document.querySelectorAll('.btn').forEach(btn => {
-    if (btn.textContent.includes('侵入開始')) btn.textContent = '▶ START HACKING';
-    if (btn.textContent.includes('タイトルへ')) btn.textContent = '◀ TITLE';
-  });
-}
-
 const $ = id => document.getElementById(id);
 const G = { idx:0, en:null, pHp:100, eHp:0, run:false, paused:false, tmrs:[], spwInt:null, atkInt:null, eCr:0, pCr:0, mwCnt:0, mwTimer:null, mwAlertTimer:null, mwTriggered:false, bw:false, st: 0, dmgTaken: false, activeSubSp: null, subIdx: 0 };
-// G.O.Dが巡回するモードの順番
-// 🌟 'visionHell' を削除し、'danmaku' のみにします
-const GOD_ROUTINE = ['danmaku', 'malwareFast', 'chaos',];
-// 🌟 カオスギミック用のランダム要素リスト
+
+const GOD_ROUTINE = ['danmaku', 'malwareFast', 'chaos'];
 const CHAOS_EMOJI = ['❓','🌀','💀','💾','🔐','🎲','🎭','🃏','🛸','🧠','💣','💎','💿','🌋','🕸','🧿','🕯','🧪','🧬','🕳'];
 const CHAOS_COLOR = ['#ff3c3c','#00ff41','#00ccff','#ffe600','#ff8800','#ff00ff','#ffffff','#00ffff'];
 
@@ -63,15 +30,12 @@ function updateTitleUI(){
   const sl = $('sl'), ebsl = $('eb-sl'), ebFrame = $('eb-frame');
   sl.innerHTML = ''; ebsl.innerHTML = '';
   
-ENEMIES.forEach((e, i) => {
+  ENEMIES.forEach((e, i) => {
     const isCleared = cl.includes(e.s);
     const isLocked = i > 0 && !cl.includes(ENEMIES[i-1].s);
-    
-    // 🌟 共通：無傷記録があればトロフィーを取得
     const trophy = SM.flawless().includes(e.s) ? '<span style="color:var(--y);margin-left:4px">🏆</span>' : '';
     
     if (e.s <= 15) {
-      // 🌟 表面：名前（e.n）の横にトロフィー（trophy）を表示
       const itemHtml = `<span class="si-em">${!isLocked?e.e:'❓'}</span><div class="si-txt">ST ${e.s}: ${!isLocked?e.n:'???'}${trophy}</div><div class="si-icon">${isCleared?'✅':(isLocked?'🔒':'⚔️')}</div>`;
       const div = document.createElement('div');
       div.className = `si ${isCleared?'clr':''} ${isLocked?'lck':''}`;
@@ -79,7 +43,6 @@ ENEMIES.forEach((e, i) => {
       div.innerHTML = itemHtml;
       sl.appendChild(div);
     } else {
-      // 🌟 裏面：名前の横にトロフィーとタイムを表示
       const bt = SM.bests()[e.s];
       const timeDisp = bt ? `<span class="eb-time">${bt.toFixed(2)}s</span>` : '';
       const div = document.createElement('div');
@@ -102,16 +65,14 @@ function beginCutin(i){
   $('ci-ms').textContent=`"${G.en.msg}"`; 
   showScreen('cs'); 
   
-  // 🌟 [クリックで開始] の作成
   let tapHint = $('ci-tap-hint');
   if (!tapHint) {
     tapHint = document.createElement('div');
-    tapHint.id = 'ci-tap-hint'; // IDを固定
+    tapHint.id = 'ci-tap-hint'; 
     $('cs').appendChild(tapHint);
   }
   tapHint.textContent = ">> クリックで開始 <<";
 
-  // 🌟 クリックイベント（ここが止まるとゲームが始まりません）
   const cs = $('cs');
   const startFunc = () => {
     cs.removeEventListener('mousedown', startFunc);
@@ -122,7 +83,6 @@ function beginCutin(i){
   cs.addEventListener('touchstart', startFunc);
 }
 
-// 🌟 消えていた重要な関数：これを追加します
 function startBattle(){
   G.run = true; 
   G.st = Date.now(); 
@@ -132,10 +92,8 @@ function startBattle(){
   G.eCr = 0; 
   G.pCr = 0;
   
-  // 🌟 [追加] バトルゾーン（bz）の中身を空っぽにする
   $('bz').innerHTML = '';
 
-  // 演出のリセット
   $('ef-wall').classList.remove('damaged');
   $('pf-wall').classList.remove('damaged');
   $('ef-cracks').style.opacity = 0;
@@ -146,11 +104,9 @@ function startBattle(){
   startGameLoops(); 
 }
 
-// game.js の 62行目付近
 function startGameLoops(){
   clearInterval(G.spwInt); clearInterval(G.atkInt);
   
-  // 🌟 モードローテーションの状態をリセット
   G.activeSubSp = null; 
   G.subIdx = 0;
 
@@ -163,7 +119,6 @@ function startGameLoops(){
   
   G.atkInt = setInterval(() => { if(G.run && !G.paused) spawnNode('block'); }, G.en.atk);
   
-  // 🌟 特殊攻撃があるならループ開始
   if(G.en.sp) startSpecialLoop();
 }
 
@@ -181,12 +136,10 @@ function updateHpBars(){
   $('fw-eh-txt').textContent = `${Math.ceil(Math.max(0, G.eHp))}/${G.en.hp} HP`; 
   $('fw-ph-txt').textContent = `${Math.ceil(Math.max(0, G.pHp))}/100 HP`;
   
-  // 敵の壁演出
-  $('ef-cracks').style.opacity = (1 - eR) * 1.2; // ダメージに合わせてひび割れを濃く
+  $('ef-cracks').style.opacity = (1 - eR) * 1.2; 
   if(eR < 0.5) $('ef-wall').classList.add('damaged');
   if(G.eCr < Math.floor((1-eR)*3)) { AU.crackEn(); G.eCr = Math.floor((1-eR)*3); }
 
-  // プレイヤーの壁演出
   $('pf-cracks').style.opacity = (1 - pR) * 1.2;
   if(pR < 0.5) $('pf-wall').classList.add('damaged');
   if(G.pCr < Math.floor((1-pR)*3)) { AU.crackPl(); G.pCr = Math.floor((1-pR)*3); }
@@ -199,6 +152,7 @@ function getSafePos(){
   while(!v && a<50){ x=Math.random()*(r.width-100); y=Math.random()*(r.height-100); v=true; for(let p of ns){ if(Math.hypot(x-p.x,y-p.y)<100){v=false;break;} } a++; }
   return {x,y};
 }
+
 function spawnNode(realType){
   if(!G.run || G.paused) return;
   const bz = $('bz'), node = document.createElement('div'), pos = getSafePos();
@@ -209,20 +163,16 @@ function spawnNode(realType){
   if(styleType==='trap'){
     let s = G.en.t ? G.en.t.s : 'basic';
     
-    // 🌟 G.O.D（godMode）の特権：すべてのトラップをランダムで使い分ける！
     if (G.en.sp === 'godMode') {
-      // ついでにG.O.Dのトラップにも 'dummy' を混ぜてさらに極悪にしておきました
       const trapTypes = ['basic', 'fakeHack', 'glitch', 'dummy'];
       s = trapTypes[Math.floor(Math.random() * trapTypes.length)];
     }
 
-    // 🌟 APEX専用：'mix' の場合は 'glitch' か 'dummy' に 50% で分岐
     if (s === 'mix') {
       s = Math.random() < 0.5 ? 'glitch' : 'dummy';
     }
 
     if (s === 'glitch') {
-      // パターンA: 見た目がチカチカする（文字は本物と同じ）
       const isFakeHack = Math.random() < 0.5;
       node.className = `node-btn node-${isFakeHack ? 'hack' : 'block'} glitch-anim`;
       node.innerHTML = isFakeHack ? '<span style="font-size:26px">🔥</span>HACK' : '<span style="font-size:26px">🛡️</span>BLOCK';
@@ -231,22 +181,18 @@ function spawnNode(realType){
       if(Math.random() < 0.5) { node.className='node-btn node-hack'; node.innerHTML='<span style="font-size:26px">🔥</span>HACK?'; } 
       else { node.className='node-btn node-block'; node.innerHTML='<span style="font-size:26px">🛡️</span>BLOCK?'; }
     }
-    // 🌟 新規追加：見た目は普通だが文字が「Dummy」
     else if (s === 'dummy') {
       const isFakeHack = Math.random() < 0.5;
-      // glitch-anim クラスを付けないのでチカチカしない。色は本物と同じになる
       node.className = `node-btn node-${isFakeHack ? 'hack' : 'block'}`;
       node.innerHTML = isFakeHack ? '<span style="font-size:26px">🔥</span>Dummy' : '<span style="font-size:26px">🛡️</span>Dummy';
     } 
     else { 
-      // 序盤の露骨なトラップ
       node.className='node-btn node-trap-basic'; node.innerHTML='<span style="font-size:26px">⚠️</span>DUMMY'; 
     }
 
   } else if(styleType==='block'){ node.className='node-btn node-block'; node.innerHTML='<span style="font-size:26px">🛡️</span>BLOCK'; } 
   else { node.className='node-btn node-hack'; node.innerHTML='<span style="font-size:26px">🔥</span>HACK'; }
 
-  // 🌟 ワープ混在対応
   const isMoving = G.en.sp === 'fastNode' || (G.en.sp === 'mixedFastNode' && Math.random() < 0.5) || G.en.sp === 'godMode' || G.en.sp === 'malwareFast';  
   if(isMoving){ node.style.transition='left 0.4s ease-out, top 0.4s ease-out'; setTimeout(()=>{ if(node.parentNode){ let np=getSafePos(); node.style.left=`${np.x}px`; node.style.top=`${np.y}px`; }}, 400); }
   
@@ -260,7 +206,6 @@ function spawnNode(realType){
     handleTap(realType, bzRect.left-appRect.left+cx+48, bzRect.top-appRect.top+cy+48);
   };
   
-  // 🌟 ステージ15：カオスギミック
   if ((G.en.sp === 'chaos' || G.activeSubSp === 'chaos') && Math.random() < (G.en.cR || 1.0)) {
     const rE = CHAOS_EMOJI[Math.floor(Math.random() * CHAOS_EMOJI.length)];
     const rC = CHAOS_COLOR[Math.floor(Math.random() * CHAOS_COLOR.length)];
@@ -288,16 +233,17 @@ function handleTap(t, x, y){
   }
   else if(t==='trap'){ 
     AU.trap(); 
-    G.dmgTaken = true; // 🌟 トラップを踏んだ際も被弾判定
+    G.dmgTaken = true; 
     G.pHp-=15; 
     $('gl-wrap').classList.add('shake'); 
     setTimeout(()=> $('gl-wrap').classList.remove('shake'), 250); 
     updateHpBars(); if(G.pHp<=0) handleLose(); 
   }
 }
+
 function enemyHit(){ 
   if(!G.run || G.paused) return; 
-  G.dmgTaken = true; // 🌟 ダメージを受けたフラグを立てる
+  G.dmgTaken = true; 
   AU.enAtk(); G.pHp-=G.en.dmg; 
   $('gl-wrap').classList.add('shake'); 
   setTimeout(()=> $('gl-wrap').classList.remove('shake'), 250); 
@@ -312,36 +258,27 @@ function fireFlame(sx, sy){
 function startSpecialLoop(){
   if(!G.run || !G.en.sp || G.paused) return;
 
-  // 🌟 G.O.D専用：モードローテーション
   if (G.en.sp === 'godMode') {
     const nextMode = () => {
       if (!G.run || G.paused) return;
-      
       clearTimeout(G.spLoopTmr);
-      
-      // 前の技の後始末
       document.querySelectorAll('.mw-box').forEach(e => e.remove());
       G.mwCnt = 0; 
       clearTimeout(G.mwTimer);
       clearTimeout(G.mwAlertTimer);
       
-      // 次のモードへ
       G.activeSubSp = GOD_ROUTINE[G.subIdx];
       G.subIdx = (G.subIdx + 1) % GOD_ROUTINE.length;
       
       $('bz').style.boxShadow = 'inset 0 0 50px rgba(255,255,255,0.2)';
       setTimeout(() => $('bz').style.boxShadow = 'none', 500);
 
-      // 13秒後に次の技へ
       G.tmrs.push(setTimeout(nextMode, 13000));
-      
       startSpecialLoop(); 
     };
-    
     if (!G.activeSubSp) nextMode();
   }
 
-  // 🌟 各ギミックの実行判定
   let delay = 2500 + Math.random()*2000;
   const currentSp = G.activeSubSp || G.en.sp; 
 
@@ -354,14 +291,9 @@ function startSpecialLoop(){
       if(G.mwCnt<=0){
         G.mwTriggered = true; AU.alert();
         
-        // 🌟 修正：英語モードなら en_mw を読み込み、背景色はそのまま流用する！
-        let mwData = G.en.mw || { bg: '#000080', hd: 'System Alert', bd: 'VIRUS DETECTED' };
-        if (IS_EN && G.en.en_mw) {
-          mwData = { bg: mwData.bg, hd: G.en.en_mw.hd, bd: G.en.en_mw.bd };
-        }
+        const mwData = G.en.mw || { bg: '#000080', hd: 'System Alert', bd: 'VIRUS DETECTED' };
 
         for(let i=0;i<5;i++){
-          
           G.mwCnt++; 
           const p = document.createElement('div'); 
           p.className = 'mw-box'; 
@@ -393,7 +325,6 @@ function startSpecialLoop(){
             document.querySelectorAll('.mw-box').forEach(e=>e.remove()); 
             G.mwCnt=0; 
             
-            // 🌟 修正：G.O.D戦では、爆発しても「おかわり」を呼ばず、13秒のモード移行を待つ！
             if (G.en.sp !== 'godMode') startSpecialLoop(); 
           } 
         }, mwDuration);
@@ -460,7 +391,6 @@ function startSpecialLoop(){
   G.tmrs.push(G.spLoopTmr);
 }
 
-// 🌟 ウィンドウを消す処理にも同じく「おかわり禁止」を追加
 window.killMw = (btn) => {
   if(!G.run || G.paused) return; btn.parentElement.parentElement.remove(); AU.pop(); G.mwCnt--;
   if(G.mwCnt<=0){ 
@@ -469,7 +399,6 @@ window.killMw = (btn) => {
     AU.weakPoint(); G.eHp-=80; updateHpBars(); 
     if(G.eHp<=0) handleWin(); 
     else if (G.run && !G.paused) {
-      // 🌟 修正：G.O.D戦では全消し後、モード切り替えまで待機させる！
       if (G.en.sp !== 'godMode') startSpecialLoop(); 
     }
   }
@@ -501,15 +430,24 @@ function handleWin(){
     $('vs-nm').textContent = G.en.n;
     showScreen('vs');
 
-    // 🌟 巨大広告枠 (300x250) だけを一番下に追加
     const adSpaceId = 'vs-ad-large-bottom';
     let ad = $(adSpaceId);
     if (!ad) {
       ad = document.createElement('div');
       ad.id = adSpaceId;
-      ad.className = 'ad-large'; // style.cssで定義した300x250の枠
-      ad.innerHTML = "スポンサー広告 (300x250)";
-      $('vs').appendChild(ad); // 末尾（一番下）に追加
+      ad.className = 'ad-large'; 
+      $('vs').appendChild(ad); 
+    }
+
+    if (IS_OFFICIAL) {
+      ad.innerHTML = `スポンサー広告 (300x250)<br>※後でここに忍者アドマックスのコードを貼ります`;
+    } else {
+      const homeUrl = "https://tinbotsusen.github.io/interception-king-hacking/"; 
+      ad.innerHTML = `
+        <a href="${homeUrl}" target="_blank" style="display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%; height:100%; background:#051105; color:var(--g); text-decoration:none; font-weight:bold; border:2px dashed var(--g); border-radius:8px; box-sizing:border-box;">
+          <span style="font-size:24px; margin-bottom:10px;">🌐 公式サイトへ</span>
+          <span style="font-size:14px;">最新アップデート＆ランキングはこちら！</span>
+        </a>`;
     }
 
     setTimeout(() => { AU.victory(); $('vs-em-wrap').classList.add('destroyed'); }, 100);
@@ -520,27 +458,33 @@ function handleLose(){ G.run = false; clearAllTimers(); showScreen('ls'); }
 function clearAllTimers(){ clearInterval(G.spwInt); clearInterval(G.atkInt); clearTimeout(G.mwTimer); clearTimeout(G.mwAlertTimer); G.tmrs.forEach(t=>clearTimeout(t)); G.tmrs=[]; }
 function showTitle(){ G.run=false; G.paused=false; AU.resume(); clearAllTimers(); updateTitleUI(); showScreen('ts'); }
 function retryStage(){ beginCutin(G.idx); }
-// 🌟 自作の共有メニューを開閉する処理
 function openShareMenu() { $('share-modal').classList.remove('hidden'); }
 function closeShareMenu() { $('share-modal').classList.add('hidden'); }
 
-// 🌟 選択したSNSごとの共有処理
 function shareTo(platform) {
   const gameUrl = window.location.href; 
-  const shareText = "【傍受王者ハッキング】全ステージ完全制覇！真の傍受王者となった！";
+  let shareText = "";
+
+  if (!$('rs').classList.contains('hidden')) {
+    shareText = "【傍受王者ハッキング】全20ステージ完全制覇！真の傍受王者となった！";
+  } else {
+    const clears = SM.clears().length;
+    if (clears === 0) {
+      shareText = "【傍受王者ハッキング】サイバー空間の防衛システムを突破し、最強のハッカーを目指せ！";
+    } else {
+      shareText = `【傍受王者ハッキング】現在 ${clears} ステージの防衛システムを突破！真の傍受王者を目指して挑戦中！`;
+    }
+  }
   
   if (platform === 'x') {
-    // X (Twitter) 用のシェアURLを開く
     const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(gameUrl)}&hashtags=傍受王者ハッキング`;
     window.open(xUrl, '_blank');
   } 
   else if (platform === 'line') {
-    // LINE用のシェアURLを開く
     const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(shareText + "\n" + gameUrl)}`;
     window.open(lineUrl, '_blank');
   } 
   else if (platform === 'copy') {
-    // クリップボードに直接テキストとURLをコピーする
     navigator.clipboard.writeText(`${shareText}\n${gameUrl}`).then(() => {
       alert("クリップボードに記録をコピーしました！\n好きな場所に貼り付けてください。");
       closeShareMenu();
@@ -558,30 +502,21 @@ function shareTo(platform) {
 })();
 document.addEventListener('DOMContentLoaded', updateTitleUI);
 
-// ==========================================
-// 🌟 スマホのお節介機能（ダブルタップズーム）を強制無効化
-// ==========================================
 let lastTouchEnd = 0;
 document.addEventListener('touchend', (event) => {
   const now = (new Date()).getTime();
-  // 前回のタップから300ミリ秒以内（連打）なら、ブラウザの標準アクションをキャンセル
   if (now - lastTouchEnd <= 300) {
     event.preventDefault();
   }
   lastTouchEnd = now;
 }, { passive: false });
 
-// ==========================================
-// 🛠️ デバッグ用ツール（リリース時は ENABLE_DEBUG を false にするだけ！）
-// ==========================================
-const ENABLE_DEBUG = false; 
+const ENABLE_DEBUG = false; // ⚠️ リリース時はここを false にしてください
 
 if (ENABLE_DEBUG) {
-  // ボタンを縦に並べるためのコンテナ
   const dbgPanel = document.createElement('div');
   dbgPanel.style.cssText = "position:fixed; top:10px; right:10px; z-index:99999; display:flex; flex-direction:column; gap:8px;";
 
-  // ① 無敵ボタン
   const godBtn = document.createElement('button');
   godBtn.innerHTML = "無敵: OFF";
   godBtn.style.cssText = "padding:8px 16px; font-family:'Orbitron', monospace; font-weight:900; background:#ff3c3c; color:#fff; border:2px solid #fff; border-radius:8px; cursor:pointer; box-shadow:0 0 10px rgba(0,0,0,0.8); transition:0.2s;";
@@ -595,7 +530,6 @@ if (ENABLE_DEBUG) {
     if(isGodMode && G.run) { G.pHp = 100; G.dmgTaken = false; updateHpBars(); }
   };
 
-  // ② 一撃撃破ボタン
   const killBtn = document.createElement('button');
   killBtn.innerHTML = "☠️ 敵を一撃撃破";
   killBtn.style.cssText = "padding:8px 16px; font-family:'Orbitron', monospace; font-weight:900; background:#ffe600; color:#000; border:2px solid #fff; border-radius:8px; cursor:pointer; box-shadow:0 0 10px rgba(0,0,0,0.8); transition:0.2s;";
@@ -612,26 +546,21 @@ if (ENABLE_DEBUG) {
     }
   };
 
-  // 🌟 ③ 全ステージ解放ボタン
   const unlockBtn = document.createElement('button');
   unlockBtn.innerHTML = "🔓 全ステージ解放";
   unlockBtn.style.cssText = "padding:8px 16px; font-family:'Orbitron', monospace; font-weight:900; background:#00ff41; color:#000; border:2px solid #fff; border-radius:8px; cursor:pointer; box-shadow:0 0 10px rgba(0,0,0,0.8); transition:0.2s;";
   
   unlockBtn.onclick = () => {
-    // ENEMIES配列の全ステージをクリア済みに登録
     ENEMIES.forEach(e => SM.addClear(e.s)); 
-    // タイトル画面のUI（リスト）を即座に更新
     updateTitleUI(); 
     alert("全20ステージをアンロックしました！");
   };
 
-  // パネルにボタンを追加して画面に表示
   dbgPanel.appendChild(godBtn);
   dbgPanel.appendChild(killBtn);
-  dbgPanel.appendChild(unlockBtn); // 🌟 追加
+  dbgPanel.appendChild(unlockBtn);
   document.body.appendChild(dbgPanel);
 
-  // システムハッキング（無敵モード用）
   const originalUpdateHp = updateHpBars;
   updateHpBars = function() {
     if (isGodMode && G.run) {
@@ -641,10 +570,7 @@ if (ENABLE_DEBUG) {
     originalUpdateHp();    
   };
 }
-// ==========================================
 
-// game.js の一番最後に追加
 function nextStage() {
-  // 現在の敵のインデックスを1つ進めて、カットインを開始する
   beginCutin(G.idx + 1);
 }
