@@ -406,14 +406,22 @@ window.killMw = (btn) => {
 
 function handleWin(){
   const dur = (Date.now() - G.st) / 1000; 
-  G.run = false; clearAllTimers();
-  SM.addWin(); SM.addClear(G.en.s);
+  G.run = false; 
+  clearAllTimers();
   
-  $('vs-time').textContent = `TIME: ${dur.toFixed(2)}s ${!G.dmgTaken ? '🏆' : ''}`;
+  $('bz').innerHTML = ''; // 画面のノードを即消去
+
+  SM.addWin(); SM.addClear(G.en.s);
   if (!G.dmgTaken) { SM.saveFlawless(G.en.s); }
   if (G.en.s >= 16) { SM.saveTime(G.en.s, dur); }
 
+  $('vs-time').textContent = `TIME: ${dur.toFixed(2)}s ${!G.dmgTaken ? '🏆' : ''}`;
+
   const btn = $('vs-next-btn');
+  
+  // 🌟 連打誤爆防止：クリア直後はボタンをタップ無効にしておく
+  btn.style.pointerEvents = 'none';
+
   if (G.en.s === 15) {
     btn.textContent = "新たな敵が君を待っている……";
     btn.onclick = () => showTitle();
@@ -422,31 +430,40 @@ function handleWin(){
     btn.onclick = () => nextStage();
   }
 
+  // 🌟 1.5秒（1500ms）経過したらボタンのロックを解除して押せるようにする
+  setTimeout(() => {
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+  }, 500);
+
   if (G.idx >= ENEMIES.length - 1) { 
     showScreen('rs'); 
     AU.victory(); 
   } else {
     $('vs-em').textContent = G.en.e;
     $('vs-nm').textContent = G.en.n;
+    // 🌟 余韻タイムを待たずに、リザルト画面はすぐに出す！
     showScreen('vs');
 
-    const adSpaceId = 'vs-ad-large-bottom';
+    // 🌟 広告枠を「画面の絶対下部（プレイヤーHPバーと同じ位置）」に固定
+    const adSpaceId = 'vs-ad-banner-bottom';
     let ad = $(adSpaceId);
     if (!ad) {
       ad = document.createElement('div');
       ad.id = adSpaceId;
-      ad.className = 'ad-large'; 
+      // position: absolute と bottom で下部に吸着させる
+      ad.style.cssText = "position:absolute; bottom:15px; left:50%; transform:translateX(-50%); width:min(360px, 92%); height:50px; display:flex; justify-content:center; align-items:center; background:#051105; border:1px solid var(--g); border-radius:4px; overflow:hidden;";
       $('vs').appendChild(ad); 
     }
 
     if (IS_OFFICIAL) {
-      ad.innerHTML = `スポンサー広告 (300x250)<br>※後でここに忍者アドマックスのコードを貼ります`;
+      ad.innerHTML = `<span style="font-size:12px; color:#888;">スポンサー広告 (320x50)</span>`;
     } else {
       const homeUrl = "https://tinbotsusen.github.io/interception-king-hacking/"; 
       ad.innerHTML = `
-        <a href="${homeUrl}" target="_blank" style="display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%; height:100%; background:#051105; color:var(--g); text-decoration:none; font-weight:bold; border:2px dashed var(--g); border-radius:8px; box-sizing:border-box;">
-          <span style="font-size:24px; margin-bottom:10px;">🌐 公式サイトへ</span>
-          <span style="font-size:14px;">最新アップデート＆ランキングはこちら！</span>
+        <a href="${homeUrl}" target="_blank" style="display:flex; justify-content:center; align-items:center; width:100%; height:100%; color:var(--g); text-decoration:none; font-weight:bold; gap:15px;">
+          <span style="font-size:16px;">🌐 公式サイトへ</span>
+          <span style="font-size:12px;">最新アプデ・ランキング</span>
         </a>`;
     }
 
