@@ -475,7 +475,7 @@ function closeShareMenu() { $('share-modal').classList.add('hidden'); }
 // 🌟 選択したSNSごとの共有処理
 function shareTo(platform) {
   const gameUrl = window.location.href; 
-  const shareText = "【傍受王者ハッキング】全20ステージ完全制覇！最高位防衛AI「G.O.D」を破壊し、真の傍受王者となった！";
+  const shareText = "【傍受王者ハッキング】全ステージ完全制覇！真の傍受王者となった！";
   
   if (platform === 'x') {
     // X (Twitter) 用のシェアURLを開く
