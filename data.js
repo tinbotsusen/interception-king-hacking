@@ -60,7 +60,7 @@ const ENEMIES = [
   { s:14, n:"サイバー犯罪集団", e:"👥", hp:280, atk:3200, dmg:10, msg:"我々はレギオン。数による暴力に屈せよ", spw: 350, t:{r:0.2, s:'basic'}, blk:0.5, limit: 1500 },
   { s:15, n:"傍受王者：ハッキング", e:"👑", hp:200, atk:3500, dmg:20, msg:"ワシこそがすべてのハッカーの王……ハッキングじゃ！！", sp:'chaos', cR: 0.7, t:{r:0.2, s:'basic'}, blk:0.5 },
 
-  { s:16, n:"MICHAEL", e:"🪟", hp:250, atk:3800, dmg:25, msg:"業務論理規格化AI", isAI: true, spw: 600, sp:'fastNode', blk:0.5, limit: 1500, t:{r:0.2, s:'basic'} }, 
+  { s:16, n:"MICHAEL", e:"🪟", hp:250, atk:3800, dmg:10, msg:"業務論理規格化AI", isAI: true, spw: 600, sp:'fastNode', blk:0.5, limit: 1500, t:{r:0.2, s:'basic'} }, 
   
   // 🌟 AMEN：おすすめ商品風の不気味なメッセージ
   { s:17, n:"AMEN", e:"🚚", hp:500, atk:4000, dmg:20, msg:"物資流通経路掌握AI", isAI: true, sp:'malwareFast', blk:0.5, t:{r:0.2, s:'basic'},
@@ -68,7 +68,7 @@ const ENEMIES = [
   
   { s:18, n:"FAITH", e:"👥", hp:200, atk:3000, dmg:30, msg:"人民認証情報統合AI", isAI: true, sp:'danmaku', blk:0.5, t:{r:0.2, s:'fakeHack'} },
 // data.js の19面のデータを以下のように書き換えます
-{ s:19, n:"APEX", e:"🍎", hp:200, atk:2500, dmg:15, msg:"高次元意匠合成AI", isAI: true, spw: 450, sp:'chaos', cR:0.7, blk:0.6, t:{r:0.25, s:'mix'} },  
+{ s:19, n:"APEX", e:"🍎", hp:200, atk:2500, dmg:15, msg:"高次元意匠合成AI", isAI: true, spw: 550, sp:'chaos', cR:0.7, blk:0.6, t:{r:0.25, s:'mix'} },  
   // 🌟 G.O.D：システムエラーとしての人間の否定
   { s:20, n:"G.O.D", e:"🤖", hp:666, atk:2500, dmg:5, msg:"Global OS Defender", isAI: true, spw: 800, sp:'godMode', blk:0.6, t:{r:0.2, s:'fakeHack'},
     mw: { bg: '#000000', hd: 'FATAL EXCEPTION', bd: '<span style="color:var(--r)">HUMAN_DELETE</span><br>対象を消去します' } }
