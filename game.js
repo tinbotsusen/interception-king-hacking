@@ -459,7 +459,7 @@ function handleWin(){
     if (IS_OFFICIAL) {
       ad.innerHTML = `<span style="font-size:12px; color:#888;">スポンサー広告 (320x50)</span>`;
     } else {
-      const homeUrl = "https://tinbotsusen.github.io/interception-king-hacking/"; 
+      const homeUrl = "https://tinbotsusen-hub.vercel.app/"; 
       ad.innerHTML = `
         <a href="${homeUrl}" target="_blank" style="display:flex; justify-content:center; align-items:center; width:100%; height:100%; color:var(--g); text-decoration:none; font-weight:bold; gap:15px;">
           <span style="font-size:16px;">🌐 公式サイトへ</span>
