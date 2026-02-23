@@ -85,7 +85,10 @@ function startBattle(){
   G.eCr = 0; 
   G.pCr = 0;
   
-  // 画面のひび割れなどをリセット
+  // 🌟 [追加] バトルゾーン（bz）の中身を空っぽにする
+  $('bz').innerHTML = '';
+
+  // 演出のリセット
   $('ef-wall').classList.remove('damaged');
   $('pf-wall').classList.remove('damaged');
   $('ef-cracks').style.opacity = 0;
@@ -519,7 +522,7 @@ document.addEventListener('touchend', (event) => {
 // ==========================================
 // 🛠️ デバッグ用ツール（リリース時は ENABLE_DEBUG を false にするだけ！）
 // ==========================================
-const ENABLE_DEBUG = false; 
+const ENABLE_DEBUG = true; 
 
 if (ENABLE_DEBUG) {
   // ボタンを縦に並べるためのコンテナ
@@ -549,23 +552,34 @@ if (ENABLE_DEBUG) {
     if (G.run && !G.paused) {
       G.eHp = 0; 
       updateHpBars(); 
-      
-      // 🌟 敵を倒した瞬間に、裏で動いているウィンドウや攻撃ループを強制停止！
       clearAllTimers(); 
       document.querySelectorAll('.mw-box').forEach(e => e.remove());
-      
-      handleWin(); // 勝利処理を強制呼び出し
+      handleWin(); 
     } else {
       console.log("戦闘中のみ使用可能です！");
     }
   };
 
+  // 🌟 ③ 全ステージ解放ボタン
+  const unlockBtn = document.createElement('button');
+  unlockBtn.innerHTML = "🔓 全ステージ解放";
+  unlockBtn.style.cssText = "padding:8px 16px; font-family:'Orbitron', monospace; font-weight:900; background:#00ff41; color:#000; border:2px solid #fff; border-radius:8px; cursor:pointer; box-shadow:0 0 10px rgba(0,0,0,0.8); transition:0.2s;";
+  
+  unlockBtn.onclick = () => {
+    // ENEMIES配列の全ステージをクリア済みに登録
+    ENEMIES.forEach(e => SM.addClear(e.s)); 
+    // タイトル画面のUI（リスト）を即座に更新
+    updateTitleUI(); 
+    alert("全20ステージをアンロックしました！");
+  };
+
   // パネルにボタンを追加して画面に表示
   dbgPanel.appendChild(godBtn);
   dbgPanel.appendChild(killBtn);
+  dbgPanel.appendChild(unlockBtn); // 🌟 追加
   document.body.appendChild(dbgPanel);
 
-  // 🌟 ゲームのシステムをハッキング（HP更新処理に割り込む）
+  // システムハッキング（無敵モード用）
   const originalUpdateHp = updateHpBars;
   updateHpBars = function() {
     if (isGodMode && G.run) {
