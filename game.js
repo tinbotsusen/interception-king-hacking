@@ -1,8 +1,8 @@
 ﻿// ==========================================
 // 🌐 グローバル設定：自サイト判定（ホワイトリスト方式）
 // ==========================================
-// 🌟 ここに自サイトのドメイン（URLの一部）を指定します。今はGitHubのものを仮置き。
-const OFFICIAL_HOST = "tinbotsusen.github.io"; 
+// 🌟 ここに自サイトのドメイン（URLの一部）を指定します。
+const OFFICIAL_HOST = "https://tinbotsusen-hub.vercel.app/"; 
 const IS_OFFICIAL = window.location.hostname.includes(OFFICIAL_HOST);
 
 // 起動時に環境を判定
