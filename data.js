@@ -70,7 +70,7 @@ const ENEMIES = [
 // data.js の19面のデータを以下のように書き換えます
 { s:19, n:"APEX", e:"🍎", hp:200, atk:2500, dmg:15, msg:"高次元意匠合成AI", isAI: true, spw: 550, sp:'chaos', cR:0.7, blk:0.6, t:{r:0.25, s:'mix'} },  
   // 🌟 G.O.D：システムエラーとしての人間の否定
-  { s:20, n:"G.O.D", e:"🤖", hp:666, atk:2500, dmg:5, msg:"Global OS Defender", isAI: true, spw: 800, sp:'godMode', blk:0.6, t:{r:0.2, s:'fakeHack'},
+  { s:20, n:"G.O.D", e:"🤖", hp:666, atk:2500, dmg:5, msg:"Global OS Defender", isAI: true, spw: 700, sp:'godMode', blk:0.6, t:{r:0.2, s:'fakeHack'},
     mw: { bg: '#000000', hd: 'FATAL EXCEPTION', bd: '<span style="color:var(--r)">HUMAN_DELETE</span><br>対象を消去します' } }
 ];
 
